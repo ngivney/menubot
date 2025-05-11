@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MenuBot Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1 style="text-align: center;">MenuBot</h1>
+    <div id="chatbox">
+        <p><strong>MenuBot:</strong> Hello! What would you like to eat today?</p>
+    </div>
+    <div style="text-align: center; margin-top: 10px;">
+        <input type="text" id="userInput" placeholder="Type your message here...">
+        <button id="sendBtn" onclick="sendMessage()">Send</button>
+    </div>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById("userInput");
+        const message = input.value;
+        if (!message.trim()) return;
+
+        const chatbox = document.getElementById("chatbox");
+        chatbox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+        input.value = '';
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        // Send message to Flask backend
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        chatbox.innerHTML += `<p><strong>MenuBot:</strong> ${data.response}</p>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
